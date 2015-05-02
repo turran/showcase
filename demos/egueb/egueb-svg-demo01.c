@@ -9,6 +9,57 @@
 
 int i = 0;
 
+/*
+ * TODO: this might go into enesim someday
+ */
+static void _hsv_to_rgb(uint8_t h, uint8_t s, uint8_t v,
+		uint8_t *r, uint8_t *g, uint8_t *b)
+{
+	uint8_t region, remainder, p, q, t;
+
+	if (s == 0)
+	{
+		*r = v;
+		*g = v;
+		*b = v;
+		return;
+	}
+
+	region = h / 43;
+	remainder = (h - (region * 43)) * 6; 
+
+	p = (v * (255 - s)) >> 8;
+	q = (v * (255 - ((s * remainder) >> 8))) >> 8;
+	t = (v * (255 - ((s * (255 - remainder)) >> 8))) >> 8;
+
+	switch (region)
+	{
+		case 0:
+		*r = v; *g = t; *b = p;
+		break;
+
+		case 1:
+		*r = q; *g = v; *b = p;
+		break;
+
+		case 2:
+		*r = p; *g = v; *b = t;
+		break;
+
+		case 3:
+		*r = p; *g = q; *b = v;
+		break;
+
+		case 4:
+		*r = t; *g = p; *b = v;
+		break;
+
+		default:
+		*r = v; *g = p; *b = q;
+		break;
+	}
+}
+
 /* once the animation stops we need to remove the element from the tree
  * and finally destroy it
  */
@@ -30,9 +81,10 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	Egueb_Dom_Node *circle;
 	Egueb_Dom_Node *parent;
 	Egueb_Dom_Node *anim;
-	Egueb_Svg_Length cx, cy, r, sw;
+	Egueb_Svg_Length cx, cy, rad, sw;
 	Egueb_Svg_Paint paint;
 	int mx, my;
+	uint8_t r, g, b;
 
 	mx = egueb_dom_event_mouse_client_x_get(ev);
 	my = egueb_dom_event_mouse_client_y_get(ev);
@@ -40,17 +92,17 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	circle = egueb_svg_element_circle_new();
 	egueb_svg_length_set(&cx, mx, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_length_set(&cy, my, EGUEB_SVG_LENGTH_UNIT_PX);
-	egueb_svg_length_set(&r, 0.1, EGUEB_SVG_LENGTH_UNIT_PX);
+	egueb_svg_length_set(&rad, 0.1, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_length_set(&sw, 2.5, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_circle_cx_set(circle, &cx);
 	egueb_svg_element_circle_cy_set(circle, &cy);
-	egueb_svg_element_circle_r_set(circle, &r);
+	egueb_svg_element_circle_r_set(circle, &rad);
 	paint.type = EGUEB_SVG_PAINT_TYPE_NONE;
 	egueb_svg_element_fill_set(circle, &paint);
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
-	/* TODO we should do HLS -> RGB */
 	i = (i + 1) % 255;
-	egueb_svg_color_components_from(&paint.color, i, 0, 0);
+	_hsv_to_rgb(i, 255, 127, &r, &g, &b); 
+	egueb_svg_color_components_from(&paint.color, r, g, b);
 	egueb_svg_element_stroke_set(circle, &paint);
 	egueb_svg_element_stroke_width_set(circle, &sw);
 	/* set the color based on the previous color */
