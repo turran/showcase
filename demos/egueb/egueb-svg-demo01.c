@@ -154,8 +154,8 @@ int main(void)
 	doc = egueb_svg_document_new();
 	svg = egueb_svg_element_svg_new();
 	/* create a window of size 960x500 */
-	egueb_svg_length_set(&width, 960, EGUEB_SVG_LENGTH_UNIT_PX);
-	egueb_svg_length_set(&height, 500, EGUEB_SVG_LENGTH_UNIT_PX);
+	egueb_svg_length_set(&width, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);
+	egueb_svg_length_set(&height, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);
 	egueb_svg_element_svg_width_set_simple(svg, &width);
 	egueb_svg_element_svg_height_set_simple(svg, &height);
 	/* add our rectangle */
