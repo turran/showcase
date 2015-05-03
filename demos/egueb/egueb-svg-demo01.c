@@ -81,8 +81,10 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	Egueb_Dom_Node *circle;
 	Egueb_Dom_Node *parent;
 	Egueb_Dom_Node *anim;
+	Egueb_Dom_String *value;
 	Egueb_Svg_Length cx, cy, rad, sw;
 	Egueb_Svg_Paint paint;
+	Egueb_Smil_Duration dur;
 	int mx, my;
 	uint8_t r, g, b;
 
@@ -100,75 +102,37 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	paint.type = EGUEB_SVG_PAINT_TYPE_NONE;
 	egueb_svg_element_fill_set(circle, &paint);
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+	/* set the color based on the previous color */
 	i = (i + 1) % 255;
 	_hsv_to_rgb(i, 255, 127, &r, &g, &b); 
 	egueb_svg_color_components_from(&paint.color, r, g, b);
 	egueb_svg_element_stroke_set(circle, &paint);
 	egueb_svg_element_stroke_width_set(circle, &sw);
-	/* set the color based on the previous color */
-	/* add an animation of the stroke color */
-	{
-		Egueb_Dom_String *attr;
-		Egueb_Dom_String *value;
+	/* animations */
+	/* default clock of 0.5s */
+	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
+	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
+	/* add an animation for the opacity */
+	anim = egueb_smil_animate_new();
+	value = egueb_dom_string_new_with_static_string("opacity");
+	egueb_smil_animation_attribute_name_set(anim, value);
+	value = egueb_dom_string_new_with_static_string("1");
+	egueb_smil_animate_base_from_set(anim, value); 
+	value = egueb_dom_string_new_with_static_string("0");
+	egueb_smil_animate_base_to_set(anim, value); 
+	egueb_smil_animation_dur_set(anim, &dur);
+	egueb_dom_node_child_append(circle, anim, NULL);
+	/* add an animation for the radius */
+	anim = egueb_smil_animate_new();
+	value = egueb_dom_string_new_with_static_string("r");
+	egueb_smil_animation_attribute_name_set(anim, value);
+	value = egueb_dom_string_new_with_static_string("0.1");
+	egueb_smil_animate_base_from_set(anim, value); 
+	value = egueb_dom_string_new_with_static_string("100");
+	egueb_smil_animate_base_to_set(anim, value); 
+	egueb_smil_animation_dur_set(anim, &dur);
+	egueb_dom_node_child_append(circle, anim, NULL);
 
-		anim = egueb_smil_animate_new();
-		attr = egueb_dom_string_new_with_static_string("attributeName");
-		value = egueb_dom_string_new_with_static_string("opacity");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		attr = egueb_dom_string_new_with_static_string("from");
-		value = egueb_dom_string_new_with_static_string("1");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		attr = egueb_dom_string_new_with_static_string("to");
-		value = egueb_dom_string_new_with_static_string("0");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		attr = egueb_dom_string_new_with_static_string("dur");
-		value = egueb_dom_string_new_with_static_string("0.5s");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		egueb_dom_node_child_append(circle, anim, NULL);
-	}
-	{
-		Egueb_Dom_String *attr;
-		Egueb_Dom_String *value;
-
-		anim = egueb_smil_animate_new();
-		attr = egueb_dom_string_new_with_static_string("attributeName");
-		value = egueb_dom_string_new_with_static_string("r");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		attr = egueb_dom_string_new_with_static_string("from");
-		value = egueb_dom_string_new_with_static_string("0.1");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		attr = egueb_dom_string_new_with_static_string("to");
-		value = egueb_dom_string_new_with_static_string("100");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		attr = egueb_dom_string_new_with_static_string("dur");
-		value = egueb_dom_string_new_with_static_string("0.5s");
-		egueb_dom_element_attribute_set(anim, attr, value, NULL);
-		egueb_dom_string_unref(attr);
-		egueb_dom_string_unref(value);
-
-		egueb_dom_node_child_append(circle, anim, NULL);
-	}
 	/* add the circle after the rect */
 	parent = egueb_dom_event_target_current_get(ev);
 	egueb_dom_node_child_append(parent, circle, NULL);
