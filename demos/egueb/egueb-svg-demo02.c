@@ -8,6 +8,73 @@
 #include "Egueb_Svg.h"
 #include "Ecore.h"
 
+static Egueb_Dom_Node * _create_hexagon(void)
+{
+	Egueb_Dom_Node *hex;
+	Egueb_Svg_Length sw;
+	Egueb_Svg_Paint paint;
+
+	hex = egueb_svg_element_path_new();
+	{
+		Egueb_Dom_String *val;
+		Egueb_Dom_String *attr;
+
+		val = egueb_dom_string_new_with_static_string("M14 33L0 25L0 8L14 0L28 8L28 25L14 33");
+		attr = egueb_dom_string_new_with_static_string("d");
+		egueb_dom_element_attribute_set(hex, attr, val, NULL);
+	}
+	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+	egueb_svg_color_components_from(&paint.color, 0xff, 0xc0, 0xcb);
+	egueb_svg_element_fill_set(hex, &paint);
+	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+	egueb_svg_color_components_from(&paint.color, 0xcc, 0xcc, 0xcc);
+	egueb_svg_element_stroke_set(hex, &paint);
+	egueb_svg_length_set(&sw, 1, EGUEB_SVG_LENGTH_UNIT_PX);
+	egueb_svg_element_stroke_width_set(hex, &sw);
+	return hex;
+}
+
+static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
+{
+	Egueb_Dom_Node *hex;
+	Egueb_Dom_Node *rect;
+	Egueb_Dom_Node *parent;
+	Enesim_Matrix m;
+	int mx, my;
+	int hx, hy;
+
+	/* calculate the hexagon below the cursor */
+	/* the hex is of size 28x33 */
+	mx = egueb_dom_event_mouse_client_x_get(ev);
+	my = egueb_dom_event_mouse_client_y_get(ev);
+	hx = mx / 28;
+	hy = my / 33;
+	hx = hx * 28;
+	if (hy % 2)
+	{
+		if (mx % 28 > 14)
+			hx += 14;
+		else
+			hx -= 14;
+		hy = hy * 33;
+		hy -= 8;
+	}
+	else
+	{
+		hy = hy * 33;
+	}
+	/* create a new path */
+	hex = _create_hexagon();
+	enesim_matrix_translate(&m, hx, hy);
+	egueb_svg_renderable_transform_set(hex, &m);
+
+	rect = egueb_dom_event_target_get(ev);
+	parent = egueb_dom_node_parent_get(rect);
+	egueb_dom_node_child_append(parent, hex, NULL);
+	egueb_dom_node_unref(parent);
+	egueb_dom_node_unref(rect);	
+}
+
 int main(void)
 {
 	Efl_Egueb_Window *w;
@@ -16,8 +83,8 @@ int main(void)
 	Egueb_Dom_Node *rect;
 	Egueb_Dom_Node *patt;
 	Egueb_Dom_Node *path;
-	Egueb_Svg_Length width, height;
 	Egueb_Svg_Length sw;
+	Egueb_Svg_Length width, height;
 	Egueb_Svg_Paint paint;
 
 	if (!efl_egueb_init())
@@ -48,12 +115,13 @@ int main(void)
 		attr = egueb_dom_string_new_with_static_string("d");
 		egueb_dom_element_attribute_set(path, attr, val, NULL);
 	}
-	paint.type = EGUEB_SVG_PAINT_TYPE_NONE;
+	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+	egueb_svg_color_components_from(&paint.color, 0xff, 0xff, 0xff);
 	egueb_svg_element_fill_set(path, &paint);
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
-	egueb_svg_color_components_from(&paint.color, 0, 0, 0);
+	egueb_svg_color_components_from(&paint.color, 0xcc, 0xcc, 0xcc);
 	egueb_svg_element_stroke_set(path, &paint);
-	egueb_svg_length_set(&sw, 0.5, EGUEB_SVG_LENGTH_UNIT_PX);
+	egueb_svg_length_set(&sw, 1, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_stroke_width_set(path, &sw);
 	egueb_dom_node_child_append(patt, path, NULL);
 	egueb_dom_node_child_append(svg, patt, NULL);
@@ -66,6 +134,9 @@ int main(void)
 	egueb_svg_length_set(&height, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);
 	egueb_svg_element_rect_width_set_simple(rect, &width);
 	egueb_svg_element_rect_height_set_simple(rect, &height);
+	/* register the mousemove event */
+	egueb_dom_node_event_listener_add(rect, EGUEB_DOM_EVENT_MOUSE_MOVE,
+			_on_rect_mouse_move, EINA_FALSE, NULL);
 	egueb_dom_node_child_append(svg, rect, NULL);
 	/* append it as our own topmost element */	
 	egueb_dom_node_child_append(doc, svg, NULL);
