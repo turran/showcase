@@ -153,7 +153,7 @@ int main(void)
 
 	doc = egueb_svg_document_new();
 	svg = egueb_svg_element_svg_new();
-	/* create a window of size 960x500 */
+	/* create our SVG */
 	egueb_svg_length_set(&width, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);
 	egueb_svg_length_set(&height, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);
 	egueb_svg_element_svg_width_set_simple(svg, &width);
@@ -174,7 +174,7 @@ int main(void)
 	egueb_dom_node_child_append(svg, rect, NULL);
 	/* append it as our own topmost element */	
 	egueb_dom_node_child_append(doc, svg, NULL);
-	
+	/* create a window of size 960x500 */
 	w = efl_egueb_window_auto_new(doc, 0, 0, 960, 500);
 	ecore_main_loop_begin();
 
