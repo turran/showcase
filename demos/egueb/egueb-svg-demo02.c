@@ -8,11 +8,86 @@
 #include "Egueb_Svg.h"
 #include "Ecore.h"
 
+static Egueb_Dom_Node * _create_in_anim(void)
+{
+	Egueb_Dom_Node *anim;
+	Egueb_Smil_Duration dur;
+	Egueb_Dom_String *value;
+
+	anim = egueb_smil_animate_new();
+	/* default clock of 0.5s */
+	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
+	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
+	value = egueb_dom_string_new_with_static_string("opacity");
+	egueb_smil_animation_attribute_name_set(anim, value);
+	value = egueb_dom_string_new_with_static_string("0");
+	egueb_smil_animate_base_from_set(anim, value); 
+	value = egueb_dom_string_new_with_static_string("1");
+	egueb_smil_animate_base_to_set(anim, value); 
+	egueb_smil_animation_dur_set(anim, &dur);
+
+	return anim;
+}
+
+static Egueb_Dom_Node * _create_out_anim(void)
+{
+	Egueb_Dom_Node *anim;
+	Egueb_Smil_Duration dur;
+	Egueb_Dom_String *value;
+
+	anim = egueb_smil_animate_new();
+	/* default clock of 0.5s */
+	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
+	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
+	value = egueb_dom_string_new_with_static_string("color");
+	egueb_smil_animation_attribute_name_set(anim, value);
+	value = egueb_dom_string_new_with_static_string("blue");
+	egueb_smil_animate_base_from_set(anim, value); 
+	value = egueb_dom_string_new_with_static_string("black");
+	egueb_smil_animate_base_to_set(anim, value); 
+	egueb_smil_animation_dur_set(anim, &dur);
+
+	return anim;
+}
+
+static void _on_hex_mouse_in(Egueb_Dom_Event *ev, void *data)
+{
+	Egueb_Dom_Node *hex;
+	Egueb_Dom_Node *anim;
+	Egueb_Dom_String *id;
+
+	/* add the in color animation */
+	hex = egueb_dom_event_target_get(ev);
+	id = egueb_svg_element_id_get(hex);
+	//printf("mouse in %s\n", egueb_dom_string_string_get(id));
+	egueb_dom_string_unref(id);
+	anim = _create_in_anim();
+	egueb_dom_node_child_append(hex, anim, NULL);
+	egueb_dom_node_unref(hex);
+}
+
+static void _on_hex_mouse_out(Egueb_Dom_Event *ev, void *data)
+{
+	Egueb_Dom_Node *hex;
+	Egueb_Dom_Node *anim;
+	Egueb_Dom_String *id;
+
+	/* add the out color animation */
+	hex = egueb_dom_event_target_get(ev);
+	id = egueb_svg_element_id_get(hex);
+	//printf("mouse out %s\n", egueb_dom_string_string_get(id));
+	egueb_dom_string_unref(id);
+	anim = _create_out_anim();
+	egueb_dom_node_child_append(hex, anim, NULL);
+	egueb_dom_node_unref(hex);
+}
+
 static Egueb_Dom_Node * _create_hexagon(void)
 {
 	Egueb_Dom_Node *hex;
 	Egueb_Svg_Length sw;
 	Egueb_Svg_Paint paint;
+	Egueb_Svg_Color color;
 
 	hex = egueb_svg_element_path_new();
 	{
@@ -23,14 +98,19 @@ static Egueb_Dom_Node * _create_hexagon(void)
 		attr = egueb_dom_string_new_with_static_string("d");
 		egueb_dom_element_attribute_set(hex, attr, val, NULL);
 	}
-	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
-	egueb_svg_color_components_from(&paint.color, 0xff, 0xc0, 0xcb);
+	paint.type = EGUEB_SVG_PAINT_TYPE_CURRENT_COLOR;
 	egueb_svg_element_fill_set(hex, &paint);
+	egueb_svg_color_components_from(&color, 0xff, 0xc0, 0xcb);
+	egueb_svg_element_color_set(hex, &color);
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
 	egueb_svg_color_components_from(&paint.color, 0xcc, 0xcc, 0xcc);
 	egueb_svg_element_stroke_set(hex, &paint);
 	egueb_svg_length_set(&sw, 1, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_stroke_width_set(hex, &sw);
+	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_OVER,
+			_on_hex_mouse_in, EINA_TRUE, NULL);
+	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_OUT,
+			_on_hex_mouse_out, EINA_TRUE, NULL);
 	return hex;
 }
 
@@ -44,30 +124,32 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	int hx, hy;
 
 	/* calculate the hexagon below the cursor */
-	/* the hex is of size 28x33 */
 	mx = egueb_dom_event_mouse_client_x_get(ev);
 	my = egueb_dom_event_mouse_client_y_get(ev);
+	/* the hex is of size 28x33 */
 	hx = mx / 28;
-	hy = my / 33;
+	hy = my / 25;
 	hx = hx * 28;
+	hy = hy * 25;
 	if (hy % 2)
 	{
 		if (mx % 28 > 14)
 			hx += 14;
 		else
 			hx -= 14;
-		hy = hy * 33;
-		hy -= 8;
-	}
-	else
-	{
-		hy = hy * 33;
 	}
 	/* create a new path */
 	hex = _create_hexagon();
+	{
+		Egueb_Dom_String *id;
+		char *ids;
+		asprintf(&ids, "hex-%dx%d", hx, hy);
+		id = egueb_dom_string_new_with_string(ids);
+		egueb_svg_element_id_set(hex, id);
+	}
 	enesim_matrix_translate(&m, hx, hy);
 	egueb_svg_renderable_transform_set(hex, &m);
-
+	/* add the hex to the svg */
 	rect = egueb_dom_event_target_get(ev);
 	parent = egueb_dom_node_parent_get(rect);
 	egueb_dom_node_child_append(parent, hex, NULL);
