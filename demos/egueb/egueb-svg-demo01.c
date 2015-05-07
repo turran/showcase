@@ -108,6 +108,8 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	egueb_svg_color_components_from(&paint.color, r, g, b);
 	egueb_svg_element_stroke_set(circle, &paint);
 	egueb_svg_element_stroke_width_set(circle, &sw);
+	/* make sure to not trigger any event on the circles */
+	egueb_svg_element_pointer_events_set(circle, EGUEB_SVG_POINTER_EVENTS_NONE);
 	/* animations */
 	/* default clock of 0.5s */
 	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
