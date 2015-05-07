@@ -73,7 +73,7 @@ static void _on_anim_end(Egueb_Dom_Event *ev, void *data)
 	parent = egueb_dom_node_parent_get(anim);
 	svg = egueb_dom_event_target_current_get(ev);
 	egueb_dom_node_child_remove(svg, parent, NULL);
-	egueb_dom_node_unref(parent);
+	egueb_dom_node_unref(svg);
 }
 
 static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
