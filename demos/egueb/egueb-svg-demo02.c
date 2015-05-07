@@ -39,46 +39,107 @@ static Egueb_Dom_Node * _create_out_anim(void)
 	/* default clock of 0.5s */
 	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
 	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
-	value = egueb_dom_string_new_with_static_string("color");
+	value = egueb_dom_string_new_with_static_string("opacity");
 	egueb_smil_animation_attribute_name_set(anim, value);
-	value = egueb_dom_string_new_with_static_string("blue");
+	value = egueb_dom_string_new_with_static_string("1");
 	egueb_smil_animate_base_from_set(anim, value); 
-	value = egueb_dom_string_new_with_static_string("black");
+	value = egueb_dom_string_new_with_static_string("0");
 	egueb_smil_animate_base_to_set(anim, value); 
 	egueb_smil_animation_dur_set(anim, &dur);
 
 	return anim;
 }
 
-static void _on_hex_mouse_in(Egueb_Dom_Event *ev, void *data)
+static Eina_Bool _hex_is_selected(Egueb_Dom_Node *hex)
+{
+	Egueb_Svg_Paint_Animated apaint;
+	/* if the hex is red, set it back to pink and add again the animations */
+	egueb_svg_element_fill_get(hex, &apaint);
+	if (apaint.base.color.r == 0xff && apaint.base.color.g == 0xc0 &&
+			apaint.base.color.b == 0xcb)
+		return EINA_FALSE;
+	else
+		return EINA_TRUE;
+}
+
+static void _on_hex_mouse_click(Egueb_Dom_Event *ev, void *data)
 {
 	Egueb_Dom_Node *hex;
 	Egueb_Dom_Node *anim;
-	Egueb_Dom_String *id;
+	Egueb_Svg_Paint paint;
+
+	hex = egueb_dom_event_target_get(ev);
+	if (!_hex_is_selected(hex))
+	{
+		Egueb_Dom_Node *attr;
+
+		paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+		egueb_svg_color_components_from(&paint.color, 0xff, 0x00, 0x00);
+		egueb_svg_element_fill_set(hex, &paint);
+		/* remove the in anim */
+		anim = egueb_dom_node_child_first_get(hex);
+		egueb_dom_node_child_remove(hex, anim, NULL);
+		/* set the max opacity in case the anim has not finished */
+		/* given that setting the opacity like this modifies the BASE
+		 * attribute, we need to set the ANIMATED value */
+		attr = egueb_dom_element_attribute_node_get(hex, EGUEB_SVG_NAME_OPACITY);
+		egueb_dom_attr_unset(attr, EGUEB_DOM_ATTR_TYPE_ANIMATED);
+		egueb_dom_node_unref(attr);
+		egueb_svg_element_opacity_set(hex, 1);
+	}
+	else
+	{
+		paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+		egueb_svg_color_components_from(&paint.color, 0xff, 0x00, 0x00);
+		egueb_svg_element_fill_set(hex, &paint);
+		anim = _create_in_anim();
+		egueb_dom_node_child_append(hex, anim, NULL);
+	}
+	egueb_dom_node_unref(hex);
+}
+
+static void _on_hex_mouse_in(Egueb_Dom_Event *ev, void *data)
+{
+	Egueb_Dom_Node *hex;
 
 	/* add the in color animation */
 	hex = egueb_dom_event_target_get(ev);
-	id = egueb_svg_element_id_get(hex);
-	//printf("mouse in %s\n", egueb_dom_string_string_get(id));
-	egueb_dom_string_unref(id);
-	anim = _create_in_anim();
-	egueb_dom_node_child_append(hex, anim, NULL);
+	if (!_hex_is_selected(hex))
+	{
+		Egueb_Dom_String *id;
+		Egueb_Dom_Node *anim;
+
+		id = egueb_svg_element_id_get(hex);
+		//printf("mouse in %s\n", egueb_dom_string_string_get(id));
+		egueb_dom_string_unref(id);
+		anim = _create_in_anim();
+		egueb_dom_node_child_append(hex, anim, NULL);
+	}
 	egueb_dom_node_unref(hex);
 }
 
 static void _on_hex_mouse_out(Egueb_Dom_Event *ev, void *data)
 {
 	Egueb_Dom_Node *hex;
-	Egueb_Dom_Node *anim;
-	Egueb_Dom_String *id;
 
-	/* add the out color animation */
 	hex = egueb_dom_event_target_get(ev);
-	id = egueb_svg_element_id_get(hex);
-	//printf("mouse out %s\n", egueb_dom_string_string_get(id));
-	egueb_dom_string_unref(id);
-	anim = _create_out_anim();
-	egueb_dom_node_child_append(hex, anim, NULL);
+	if (!_hex_is_selected(hex))
+	{
+		Egueb_Dom_Node *anim;
+		Egueb_Dom_String *id;
+
+		/* stop the current animation */
+		anim = egueb_dom_node_child_first_get(hex);
+		egueb_smil_animation_element_end(anim);
+		egueb_dom_node_child_remove(hex, anim, NULL);
+		//egueb_dom_node_unref(anim);
+		/* add the out color animation */
+		id = egueb_svg_element_id_get(hex);
+		//printf("mouse out %s\n", egueb_dom_string_string_get(id));
+		egueb_dom_string_unref(id);
+		anim = _create_out_anim();
+		egueb_dom_node_child_append(hex, anim, NULL);
+	}
 	egueb_dom_node_unref(hex);
 }
 
@@ -87,7 +148,6 @@ static Egueb_Dom_Node * _create_hexagon(void)
 	Egueb_Dom_Node *hex;
 	Egueb_Svg_Length sw;
 	Egueb_Svg_Paint paint;
-	Egueb_Svg_Color color;
 
 	hex = egueb_svg_element_path_new();
 	{
@@ -98,19 +158,21 @@ static Egueb_Dom_Node * _create_hexagon(void)
 		attr = egueb_dom_string_new_with_static_string("d");
 		egueb_dom_element_attribute_set(hex, attr, val, NULL);
 	}
-	paint.type = EGUEB_SVG_PAINT_TYPE_CURRENT_COLOR;
+	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
+	egueb_svg_color_components_from(&paint.color, 0xff, 0xc0, 0xcb);
 	egueb_svg_element_fill_set(hex, &paint);
-	egueb_svg_color_components_from(&color, 0xff, 0xc0, 0xcb);
-	egueb_svg_element_color_set(hex, &color);
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
 	egueb_svg_color_components_from(&paint.color, 0xcc, 0xcc, 0xcc);
 	egueb_svg_element_stroke_set(hex, &paint);
+	egueb_svg_element_opacity_set(hex, 0);
 	egueb_svg_length_set(&sw, 1, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_stroke_width_set(hex, &sw);
 	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_OVER,
 			_on_hex_mouse_in, EINA_TRUE, NULL);
 	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_OUT,
 			_on_hex_mouse_out, EINA_TRUE, NULL);
+	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_on_hex_mouse_click, EINA_TRUE, NULL);
 	return hex;
 }
 
