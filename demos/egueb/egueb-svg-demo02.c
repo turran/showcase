@@ -52,7 +52,7 @@ static Egueb_Dom_Node * _create_out_anim(void)
 
 static Eina_Bool _hex_is_selected(Egueb_Dom_Node *hex)
 {
-	Egueb_Svg_Paint_Animated apaint;
+	Egueb_Svg_Paint_Animated apaint = {{ 0 }};
 	/* if the hex is red, set it back to pink and add again the animations */
 	egueb_svg_element_fill_get(hex, &apaint);
 	if (apaint.base.color.r == 0xff && apaint.base.color.g == 0xc0 &&
@@ -157,6 +157,8 @@ static Egueb_Dom_Node * _create_hexagon(void)
 		val = egueb_dom_string_new_with_static_string("M14 33L0 25L0 8L14 0L28 8L28 25L14 33");
 		attr = egueb_dom_string_new_with_static_string("d");
 		egueb_dom_element_attribute_set(hex, attr, val, NULL);
+		egueb_dom_string_unref(attr);
+		egueb_dom_string_unref(val);
 	}
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
 	egueb_svg_color_components_from(&paint.color, 0xff, 0xc0, 0xcb);
