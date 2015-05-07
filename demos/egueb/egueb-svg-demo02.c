@@ -90,7 +90,7 @@ static void _on_hex_mouse_click(Egueb_Dom_Event *ev, void *data)
 	else
 	{
 		paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
-		egueb_svg_color_components_from(&paint.color, 0xff, 0x00, 0x00);
+		egueb_svg_color_components_from(&paint.color, 0xff, 0xc0, 0xcb);
 		egueb_svg_element_fill_set(hex, &paint);
 		anim = _create_in_anim();
 		egueb_dom_node_child_append(hex, anim, NULL);
