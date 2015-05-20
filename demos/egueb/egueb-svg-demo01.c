@@ -95,7 +95,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	egueb_svg_length_set(&cx, mx, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_length_set(&cy, my, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_length_set(&rad, 0.1, EGUEB_SVG_LENGTH_UNIT_PX);
-	egueb_svg_length_set(&sw, 2.5, EGUEB_SVG_LENGTH_UNIT_PX);
+	egueb_svg_length_set(&sw, 1, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_circle_cx_set(circle, &cx);
 	egueb_svg_element_circle_cy_set(circle, &cy);
 	egueb_svg_element_circle_r_set(circle, &rad);
@@ -113,7 +113,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	/* animations */
 	/* default clock of 0.5s */
 	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
-	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
+	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 1;
 	/* add an animation for the opacity */
 	anim = egueb_smil_animate_new();
 	value = egueb_dom_string_new_with_static_string("opacity");
