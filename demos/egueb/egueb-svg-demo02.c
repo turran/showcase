@@ -68,7 +68,7 @@ static void _on_hex_mouse_click(Egueb_Dom_Event *ev, void *data)
 	Egueb_Dom_Node *anim;
 	Egueb_Svg_Paint paint;
 
-	hex = egueb_dom_event_target_get(ev);
+	hex = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	if (!_hex_is_selected(hex))
 	{
 		Egueb_Dom_Node *attr;
@@ -103,7 +103,7 @@ static void _on_hex_mouse_in(Egueb_Dom_Event *ev, void *data)
 	Egueb_Dom_Node *hex;
 
 	/* add the in color animation */
-	hex = egueb_dom_event_target_get(ev);
+	hex = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	if (!_hex_is_selected(hex))
 	{
 		Egueb_Dom_String *id;
@@ -122,7 +122,7 @@ static void _on_hex_mouse_out(Egueb_Dom_Event *ev, void *data)
 {
 	Egueb_Dom_Node *hex;
 
-	hex = egueb_dom_event_target_get(ev);
+	hex = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	if (!_hex_is_selected(hex))
 	{
 		Egueb_Dom_Node *anim;
@@ -146,6 +146,7 @@ static void _on_hex_mouse_out(Egueb_Dom_Event *ev, void *data)
 static Egueb_Dom_Node * _create_hexagon(void)
 {
 	Egueb_Dom_Node *hex;
+	Egueb_Dom_Event_Target *evt;
 	Egueb_Svg_Length sw;
 	Egueb_Svg_Paint paint;
 
@@ -169,11 +170,13 @@ static Egueb_Dom_Node * _create_hexagon(void)
 	egueb_svg_element_opacity_set(hex, 0);
 	egueb_svg_length_set(&sw, 1, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_stroke_width_set(hex, &sw);
-	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_OVER,
+
+	evt = EGUEB_DOM_EVENT_TARGET_CAST(hex);
+	egueb_dom_event_target_event_listener_add(evt, EGUEB_DOM_EVENT_MOUSE_OVER,
 			_on_hex_mouse_in, EINA_TRUE, NULL);
-	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_OUT,
+	egueb_dom_event_target_event_listener_add(evt, EGUEB_DOM_EVENT_MOUSE_OUT,
 			_on_hex_mouse_out, EINA_TRUE, NULL);
-	egueb_dom_node_event_listener_add(hex, EGUEB_DOM_EVENT_MOUSE_CLICK,
+	egueb_dom_event_target_event_listener_add(evt, EGUEB_DOM_EVENT_MOUSE_CLICK,
 			_on_hex_mouse_click, EINA_TRUE, NULL);
 	return hex;
 }
@@ -214,7 +217,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	enesim_matrix_translate(&m, hx, hy);
 	egueb_svg_renderable_transform_set(hex, &m);
 	/* add the hex to the svg */
-	rect = egueb_dom_event_target_get(ev);
+	rect = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	parent = egueb_dom_node_parent_get(rect);
 	egueb_dom_node_child_append(parent, hex, NULL);
 	egueb_dom_node_unref(parent);
@@ -281,7 +284,9 @@ int main(void)
 	egueb_svg_element_rect_width_set_simple(rect, &width);
 	egueb_svg_element_rect_height_set_simple(rect, &height);
 	/* register the mousemove event */
-	egueb_dom_node_event_listener_add(rect, EGUEB_DOM_EVENT_MOUSE_MOVE,
+	egueb_dom_event_target_event_listener_add(
+			EGUEB_DOM_EVENT_TARGET_CAST(rect),
+			EGUEB_DOM_EVENT_MOUSE_MOVE,
 			_on_rect_mouse_move, EINA_FALSE, NULL);
 	egueb_dom_node_child_append(svg, rect, NULL);
 	/* append it as our own topmost element */	

@@ -69,9 +69,9 @@ static void _on_anim_end(Egueb_Dom_Event *ev, void *data)
 	Egueb_Dom_Node *svg;
 	Egueb_Dom_Node *parent;
 
-	anim = egueb_dom_event_target_get(ev);
+	anim = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	parent = egueb_dom_node_parent_get(anim);
-	svg = egueb_dom_event_target_current_get(ev);
+	svg = EGUEB_DOM_NODE(egueb_dom_event_target_current_get(ev));
 	egueb_dom_node_child_remove(svg, parent, NULL);
 	egueb_dom_node_unref(svg);
 }
@@ -136,7 +136,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	egueb_dom_node_child_append(circle, anim, NULL);
 
 	/* add the circle after the rect */
-	parent = egueb_dom_event_target_current_get(ev);
+	parent = EGUEB_DOM_NODE(egueb_dom_event_target_current_get(ev));
 	egueb_dom_node_child_append(parent, circle, NULL);
 	egueb_dom_node_unref(parent);
 }
@@ -168,10 +168,14 @@ int main(void)
 	egueb_svg_element_rect_width_set_simple(rect, &width);
 	egueb_svg_element_rect_height_set_simple(rect, &height);
 	/* register the mousemove event */
-	egueb_dom_node_event_listener_add(svg, EGUEB_DOM_EVENT_MOUSE_MOVE,
+	egueb_dom_event_target_event_listener_add(
+			EGUEB_DOM_EVENT_TARGET_CAST(svg),
+			EGUEB_DOM_EVENT_MOUSE_MOVE,
 			_on_rect_mouse_move, EINA_FALSE, NULL);
 	/* register the anim end event */
-	egueb_dom_node_event_listener_add(svg, EGUEB_SMIL_EVENT_END,
+	egueb_dom_event_target_event_listener_add(
+			EGUEB_DOM_EVENT_TARGET_CAST(svg),
+			EGUEB_SMIL_EVENT_END,
 			_on_anim_end, EINA_TRUE, NULL);
 	egueb_dom_node_child_append(svg, rect, NULL);
 	/* append it as our own topmost element */	
