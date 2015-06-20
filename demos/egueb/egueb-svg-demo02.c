@@ -226,7 +226,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 
 int main(void)
 {
-	Efl_Egueb_Window *w;
+	Egueb_Dom_Window *w;
 	Egueb_Dom_Node *doc;
 	Egueb_Dom_Node *svg;
 	Egueb_Dom_Node *rect;
@@ -295,7 +295,7 @@ int main(void)
 	w = efl_egueb_window_auto_new(doc, 0, 0, 960, 500);
 	ecore_main_loop_begin();
 
-	efl_egueb_window_free(w);
+	egueb_dom_window_unref(w);
 	efl_egueb_shutdown();
 	return 0;
 

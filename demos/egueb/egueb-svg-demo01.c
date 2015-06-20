@@ -60,6 +60,12 @@ static void _hsv_to_rgb(uint8_t h, uint8_t s, uint8_t v,
 	}
 }
 
+static void _on_close(Egueb_Dom_Event *ev, void *data)
+{
+	printf("closing\n");
+	ecore_main_loop_exit();
+}
+
 /* once the animation stops we need to remove the element from the tree
  * and finally destroy it
  */
@@ -143,7 +149,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 
 int main(void)
 {
-	Efl_Egueb_Window *w;
+	Egueb_Dom_Window *w;
 	Egueb_Dom_Node *doc;
 	Egueb_Dom_Node *svg;
 	Egueb_Dom_Node *rect;
@@ -180,11 +186,19 @@ int main(void)
 	egueb_dom_node_child_append(svg, rect, NULL);
 	/* append it as our own topmost element */	
 	egueb_dom_node_child_append(doc, svg, NULL);
+
 	/* create a window of size 960x500 */
 	w = efl_egueb_window_auto_new(doc, 0, 0, 960, 500);
+	egueb_dom_event_target_event_listener_add(
+			EGUEB_DOM_EVENT_TARGET_CAST(w),
+			EGUEB_DOM_EVENT_WINDOW_CLOSE,
+			_on_close, EINA_FALSE, NULL);
+
+	/* begin */
 	ecore_main_loop_begin();
 
-	efl_egueb_window_free(w);
+	printf("exit\n");
+	egueb_dom_window_unref(w);
 	efl_egueb_shutdown();
 	return 0;
 }
