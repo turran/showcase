@@ -62,8 +62,7 @@ static void _hsv_to_rgb(uint8_t h, uint8_t s, uint8_t v,
 
 static void _on_close(Egueb_Dom_Event *ev, void *data)
 {
-	printf("closing\n");
-	ecore_main_loop_exit();
+	ecore_main_loop_quit();
 }
 
 /* once the animation stops we need to remove the element from the tree
@@ -197,7 +196,6 @@ int main(void)
 	/* begin */
 	ecore_main_loop_begin();
 
-	printf("exit\n");
 	egueb_dom_window_unref(w);
 	efl_egueb_shutdown();
 	return 0;
