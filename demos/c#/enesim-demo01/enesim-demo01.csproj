@@ -30,8 +30,15 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Reference Include="enesim-sharp" />
-    <Reference Include="eina-sharp" />
+    <Reference Include="enesim-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\enesim-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="eina-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\eina-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ender-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\ender-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnesimDemo01.cs" />
