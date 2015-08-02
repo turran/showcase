@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{943C56E5-D6DA-4B96-9FAE-AD20283B6F3E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>eguebdemo01</RootNamespace>
+    <AssemblyName>egueb-demo01</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="egueb-svg-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\egueb-svg-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="egueb-dom-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\egueb-dom-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ender-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\ender-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="enesim-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\enesim-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="eina-sharp">
+      <HintPath>..\..\..\..\ender-sharp\x86_64\bin\eina-sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EguebDemo01.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EguebDemo01.svg" />
+  </ItemGroup>
+</Project>
