@@ -8,6 +8,11 @@
 #include "Egueb_Svg.h"
 #include "Ecore.h"
 
+static void _on_close(Egueb_Dom_Event *ev, void *data)
+{
+	ecore_main_loop_quit();
+}
+
 static Egueb_Dom_Node * _create_in_anim(void)
 {
 	Egueb_Dom_Node *anim;
@@ -293,6 +298,12 @@ int main(void)
 	egueb_dom_node_child_append(doc, svg, NULL);
 	/* create a window of size 960x500 */
 	w = efl_egueb_window_auto_new(doc, 0, 0, 960, 500);
+	egueb_dom_event_target_event_listener_add(
+			EGUEB_DOM_EVENT_TARGET_CAST(w),
+			EGUEB_DOM_EVENT_WINDOW_CLOSE,
+			_on_close, EINA_FALSE, NULL);
+
+	/* begin */
 	ecore_main_loop_begin();
 
 	egueb_dom_window_unref(w);
