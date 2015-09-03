@@ -45,10 +45,28 @@ namespace eguebdemo01
 				return;
 			}
 
-			//topmost.GetFeature (null, 0);
+			Egueb.Dom.FeatureWindow window = (Egueb.Dom.FeatureWindow)topmost.GetFeature (Egueb.Dom.FeatureWindow.NAME, null);
+			if (window == null) {
+				Console.WriteLine ("No window feature");
+				return;
+			} else {
+				//Egueb.Dom.FeatureWindowType type = window.GetType ();
+			}
+
+			Egueb.Dom.FeatureRender render = (Egueb.Dom.FeatureRender)topmost.GetFeature (Egueb.Dom.FeatureRender.NAME, null);
+			if (render == null) {
+				Console.WriteLine ("No render feature");
+				return;
+			}
+
+			doc.Process ();
+
 			Console.WriteLine ("node is " + doc);
 			Enesim.Surface s = new Enesim.Surface (Format.Enum.Argb8888, 320, 240);
-			//Egueb.Svg.Draw (s, Enesim.Rop.Fill, null, 0, 0, null);
+			render.Draw (s, Enesim.Rop.Fill, null, 0, 0, null);
+
+			Eina.Error err;
+			ImageFile.Save ("out.png", s.GetBuffer (), null, out err);
 
 			Egueb.Svg.ColorAnimated ca = new Egueb.Svg.ColorAnimated ();
 			ca.Anim.B = 0xff;
