@@ -30,6 +30,9 @@ namespace eguebdemo01
 			Ender.Main.Init ();
 
 			Egueb.Dom.Document doc;
+			int width = 256;
+			int height = 256;
+			bool needs_process = true;
 
 			//doc.AppendChild (svg, new Eina.Error());
 			// TODO handle correctly the postunmanaged on out objects
@@ -50,7 +53,20 @@ namespace eguebdemo01
 				Console.WriteLine ("No window feature");
 				return;
 			} else {
-				//Egueb.Dom.FeatureWindowType type = window.GetType ();
+				Egueb.Dom.FeatureWindowType type;
+				if (window.GetType (out type))
+				{
+					if (type == Egueb.Dom.FeatureWindowType.Master) {
+						window.SetContentSize (width, height);
+					}
+					window.GetContentSize (out width, out height);
+					if (width <= 0 || height <= 0) {
+						Console.WriteLine ("Invalid size of " + width + "x" + height);
+						return;
+					}
+					doc.Process ();
+					needs_process = false;
+				}
 			}
 
 			Egueb.Dom.FeatureRender render = (Egueb.Dom.FeatureRender)topmost.GetFeature (Egueb.Dom.FeatureRender.NAME, null);
@@ -59,19 +75,14 @@ namespace eguebdemo01
 				return;
 			}
 
-			doc.Process ();
+			if (needs_process)
+				doc.Process ();
 
-			Console.WriteLine ("node is " + doc);
-			Enesim.Surface s = new Enesim.Surface (Format.Enum.Argb8888, 320, 240);
+			Enesim.Surface s = new Enesim.Surface (Format.Enum.Argb8888, (uint)width, (uint)height);
 			render.Draw (s, Enesim.Rop.Fill, null, 0, 0, null);
 
 			Eina.Error err;
 			ImageFile.Save ("out.png", s.GetBuffer (), null, out err);
-
-			Egueb.Svg.ColorAnimated ca = new Egueb.Svg.ColorAnimated ();
-			ca.Anim.B = 0xff;
-			Console.WriteLine ("color " + ca.Anim.B);
 		}
 	}
 }
-
