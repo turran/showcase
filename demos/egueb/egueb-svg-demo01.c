@@ -70,14 +70,12 @@ static void _on_close(Egueb_Dom_Event *ev, void *data)
  */
 static void _on_anim_end(Egueb_Dom_Event *ev, void *data)
 {
-	Egueb_Dom_Node *anim;
+	Egueb_Dom_Node *circle;
 	Egueb_Dom_Node *svg;
-	Egueb_Dom_Node *parent;
 
-	anim = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
-	parent = egueb_dom_node_parent_get(anim);
+	circle = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	svg = EGUEB_DOM_NODE(egueb_dom_event_target_current_get(ev));
-	egueb_dom_node_child_remove(svg, parent, NULL);
+	egueb_dom_node_child_remove(svg, circle, NULL);
 	egueb_dom_node_unref(svg);
 }
 
