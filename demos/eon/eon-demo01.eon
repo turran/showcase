@@ -10,9 +10,13 @@ STRINGIFY(
       <animate attributeName="cursor-visible" values="true; false; true" begin="focusin" dur="1s" end="focusout" calcMode="discrete" keyTimes="0; 0.5; 1" repeatCount="indefinite" fill="remove"/>
     </demo01:entry>
   </eot>
-  <frame title="Form">
+  <frame title="User based theme demo">
     <stack orientation="vertical" hexpand="true">
       <entry>Focus me</entry>
+      <stack orientation="horizontal" hexpand="true">
+        <label halign="left">Use custom theme</label>
+        <switch id="switch01" active="ON" inactive="OFF" activated="false"/>
+      </stack>
     </stack>
   </frame>
 </eon>

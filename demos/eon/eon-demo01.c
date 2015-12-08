@@ -18,6 +18,11 @@ static void _on_close(Egueb_Dom_Event *ev, void *data)
 	ecore_main_loop_quit();
 }
 
+static void _on_switch01_click(Egueb_Dom_Event *ev, void *data)
+{
+	printf("click!\n");
+}
+
 #if 0
 /*----------------------------------------------------------------------------*
  *                              Entry interface                              *
@@ -224,6 +229,8 @@ int main(void)
 {
 	Egueb_Dom_Window *w;
 	Egueb_Dom_Node *doc = NULL;
+	Egueb_Dom_Node *switch01;
+	Egueb_Dom_Event_Target *evt;
 	Enesim_Stream *stream;
 
 	if (!efl_egueb_init())
@@ -231,8 +238,16 @@ int main(void)
 
 	stream = enesim_stream_buffer_new(_xml, strlen(_xml), NULL);
 	egueb_dom_parser_parse(stream, &doc);
+	switch01 = egueb_dom_document_element_get_by_id(doc,
+			egueb_dom_string_new_with_static_string("switch01"),
+			NULL);
+	evt = EGUEB_DOM_EVENT_TARGET_CAST(switch01);
+	egueb_dom_event_target_event_listener_add(evt, EGUEB_DOM_EVENT_MOUSE_CLICK,
+			_on_switch01_click, EINA_TRUE, NULL);
+	egueb_dom_node_unref(switch01);
+	
 	/* create our doc with the xml egueb-demo01.eon */
-	w = efl_egueb_window_auto_new(doc, 0, 0, -1, -1);
+	w = efl_egueb_window_auto_new(doc, 0, 0, 400, 300);
 	egueb_dom_event_target_event_listener_add(
 			EGUEB_DOM_EVENT_TARGET_CAST(w),
 			EGUEB_DOM_EVENT_WINDOW_CLOSE,
