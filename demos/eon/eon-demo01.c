@@ -1,5 +1,5 @@
 /* To compile:
- * gcc -Wall eon-demo01.c -o eon-demo01 `pkg-config --cflags --libs eon egueb-dom ecore efl-egueb`
+ * gcc -Wall eon-demo01.c -o eon-demo01 `pkg-config --cflags --libs eon egueb-dom egueb-css ecore efl-egueb`
  */
 #include "Eon.h"
 #include "Efl_Egueb.h"
@@ -13,6 +13,10 @@ static char *_xml =
 #include "eon-demo01.eon"
 ;
 
+/* Forward declarations */
+static Egueb_Dom_Node * demo01_entry_new(void);
+
+/* Event handlers */
 static void _on_close(Egueb_Dom_Event *ev, void *data)
 {
 	ecore_main_loop_quit();
@@ -23,18 +27,35 @@ static void _on_switch01_click(Egueb_Dom_Event *ev, void *data)
 	printf("click!\n");
 }
 
-#if 0
 /*----------------------------------------------------------------------------*
- *                              Entry interface                              *
+ *                              Entry interface                               *
  *----------------------------------------------------------------------------*/
-static int _eon_theme_mars_entry_version_get(void)
+typedef struct _Demo01_Entry
+{
+	Egueb_Dom_Node *n;
+	/* attributes */
+	Egueb_Dom_Node *border_color;
+	Egueb_Dom_Node *cursor_visible;
+	/* private */
+	Enesim_Renderer *cursor;
+	Enesim_Renderer *underline;
+	Enesim_Renderer *entry;
+	Enesim_Renderer *entry_clip;
+	Enesim_Renderer *blur;
+	Enesim_Renderer *proxy;
+} Demo01_Entry;
+
+#define DEMO01_MARGIN 5 
+#define DEMO01_BORDER 2
+
+static int _demo01_entry_version_get(void)
 {
 	return EON_THEME_ELEMENT_ENTRY_VERSION;
 }
 
-static void _eon_theme_mars_entry_dtor(void *data)
+static void _demo01_entry_dtor(void *data)
 {
-	Eon_Theme_Mars_Entry *thiz = data;
+	Demo01_Entry *thiz = data;
 
 	/* attributes */
 	egueb_dom_node_unref(thiz->cursor_visible);
@@ -49,14 +70,14 @@ static void _eon_theme_mars_entry_dtor(void *data)
 	free(thiz);
 }
 
-static const char * _eon_theme_mars_entry_tag_name_get(void)
+static const char * _demo01_entry_tag_name_get(void)
 {
 	return "entry";
 }
 
-static Eina_Bool _eon_theme_mars_entry_process(void *data)
+static Eina_Bool _demo01_entry_process(void *data)
 {
-	Eon_Theme_Mars_Entry *thiz;
+	Demo01_Entry *thiz;
 	Enesim_Renderer *text;
 	Eina_Rectangle geom;
 	Eina_Bool enabled;
@@ -81,8 +102,8 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	text = eon_theme_element_entry_text_renderer_get(thiz->n);
 	enesim_renderer_shape_fill_renderer_set(thiz->entry_clip,
 			enesim_renderer_ref(text));
-	enesim_renderer_origin_set(text, geom.x + EON_THEME_MARS_MARGIN,
-			geom.y + EON_THEME_MARS_MARGIN);
+	enesim_renderer_origin_set(text, geom.x + DEMO01_MARGIN,
+			geom.y + DEMO01_MARGIN);
 
 	/* set the underline */
 	enesim_renderer_shape_stroke_color_set(thiz->underline, border_color);
@@ -93,7 +114,7 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	/* TODO no need to calculate this every time, move this calc to the base
 	 * theme class */
 	cursor_index = eon_theme_element_entry_cursor_get(thiz->n);
-	cursor_start = geom.x + EON_THEME_MARS_MARGIN;
+	cursor_start = geom.x + DEMO01_MARGIN;
 	if (!enesim_renderer_text_span_glyph_index_at(text, cursor_index, &cursor_start, NULL))
 	{
 		enesim_renderer_text_span_glyph_index_at(text, cursor_index - 1, NULL, &cursor_start);
@@ -122,42 +143,39 @@ static Eina_Bool _eon_theme_mars_entry_process(void *data)
 	return EINA_TRUE;
 }
 
-static Enesim_Renderer * _eon_theme_mars_entry_renderer_get(void *data)
+static Enesim_Renderer * _demo01_entry_renderer_get(void *data)
 {
-	Eon_Theme_Mars_Entry *thiz = data;
+	Demo01_Entry *thiz = data;
 	return enesim_renderer_ref(thiz->proxy);
 }
 
-static void _eon_theme_mars_entry_padding_get(void *data,
+static void _demo01_entry_padding_get(void *data,
 		Eon_Box *padding)
 {
-	padding->left = EON_THEME_MARS_MARGIN;
-	padding->right = EON_THEME_MARS_MARGIN;
-	padding->top = EON_THEME_MARS_MARGIN;
-	padding->bottom = EON_THEME_MARS_MARGIN;
+	padding->left = DEMO01_MARGIN;
+	padding->right = DEMO01_MARGIN;
+	padding->top = DEMO01_MARGIN;
+	padding->bottom = DEMO01_MARGIN;
 }
 
 static Eon_Theme_Element_Entry_Descriptor _descriptor = {
-	/* .version_get		= */ _eon_theme_mars_entry_version_get,
-	/* .ctor 		= */ eon_theme_mars_entry_new,
-	/* .dtor 		= */ _eon_theme_mars_entry_dtor,
-	/* .tag_name_get	= */ _eon_theme_mars_entry_tag_name_get,
-	/* .process 		= */ _eon_theme_mars_entry_process,
-	/* .renderer_get	= */ _eon_theme_mars_entry_renderer_get,
-	/* .padding_get		= */ _eon_theme_mars_entry_padding_get,
+	/* .version_get		= */ _demo01_entry_version_get,
+	/* .ctor 		= */ demo01_entry_new,
+	/* .dtor 		= */ _demo01_entry_dtor,
+	/* .tag_name_get	= */ _demo01_entry_tag_name_get,
+	/* .process 		= */ _demo01_entry_process,
+	/* .renderer_get	= */ _demo01_entry_renderer_get,
+	/* .padding_get		= */ _demo01_entry_padding_get,
 };
 
-/*============================================================================*
- *                                 Global                                     *
- *============================================================================*/
-Egueb_Dom_Node * eon_theme_mars_entry_new(void)
+static Egueb_Dom_Node * demo01_entry_new(void)
 {
-	Eon_Theme_Mars_Entry *thiz;
+	Demo01_Entry *thiz;
 	Egueb_Dom_Node *n;
 	Egueb_Dom_String *s;
 	Enesim_Renderer_Compound_Layer *l;
 
-	thiz = calloc(1, sizeof(Eon_Theme_Mars_Entry));
+	thiz = calloc(1, sizeof(Demo01_Entry));
 	thiz->entry_clip = enesim_renderer_rectangle_new();
 	enesim_renderer_shape_draw_mode_set(thiz->entry_clip,
 			ENESIM_RENDERER_SHAPE_DRAW_MODE_FILL);
@@ -165,12 +183,12 @@ Egueb_Dom_Node * eon_theme_mars_entry_new(void)
 	thiz->underline = enesim_renderer_line_new();
 	enesim_renderer_shape_draw_mode_set(thiz->underline,
 		ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
-	enesim_renderer_shape_stroke_weight_set(thiz->underline, EON_THEME_MARS_BORDER);
+	enesim_renderer_shape_stroke_weight_set(thiz->underline, DEMO01_BORDER);
 
 	thiz->cursor = enesim_renderer_line_new();
 	enesim_renderer_shape_draw_mode_set(thiz->cursor,
 		ENESIM_RENDERER_SHAPE_DRAW_MODE_STROKE);
-	enesim_renderer_shape_stroke_weight_set(thiz->cursor, EON_THEME_MARS_BORDER);
+	enesim_renderer_shape_stroke_weight_set(thiz->cursor, DEMO01_BORDER);
 
 	/* the real entry */
 	thiz->entry = enesim_renderer_compound_new();
@@ -216,17 +234,9 @@ Egueb_Dom_Node * eon_theme_mars_entry_new(void)
 	return n;
 }
 
-	_namespace = eon_theme_namespace_register("http://www.eon.org/theme/mars");
-	if (!_namespace)
-		return EINA_FALSE;
-	eon_theme_namespace_element_add(_namespace, "button",
-			eon_theme_mars_button_new);
-	eon_theme_namespace_element_add(_namespace, "entry",
-			eon_theme_mars_entry_new);
-#endif
-
 int main(void)
 {
+	Eon_Theme_Namespace *ns;
 	Egueb_Dom_Window *w;
 	Egueb_Dom_Node *doc = NULL;
 	Egueb_Dom_Node *switch01;
@@ -235,6 +245,11 @@ int main(void)
 
 	if (!efl_egueb_init())
 		return -1;
+
+	/* register the theme */
+	eon_init();
+	ns = eon_theme_namespace_register("http://www.eon.org/theme/demo01");
+	eon_theme_namespace_element_add(ns, "entry", demo01_entry_new);
 
 	stream = enesim_stream_buffer_new(_xml, strlen(_xml), NULL);
 	egueb_dom_parser_parse(stream, &doc);

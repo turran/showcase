@@ -4,15 +4,20 @@ STRINGIFY(
   xmlns:demo01="http://www.eon.org/theme/demo01">
   <!-- declare our own theme for the entry -->
   <eot>
-    <demo01:entry id="entry" border-color="#ff0f3b65" font="Verdana 12pt" color="white" cursor-visible="false">
-      <set attributeName="border-color" to="darkred" begin="focusin" dur="1s" end="focusout"/>
-      <set attributeName="border-color" to="#ff0f3b65" begin="focusout" dur="1s" end="focusin"/>
-      <animate attributeName="cursor-visible" values="true; false; true" begin="focusin" dur="1s" end="focusout" calcMode="discrete" keyTimes="0; 0.5; 1" repeatCount="indefinite" fill="remove"/>
+    <demo01:entry id="demoEntry" border-color="#ff0f3b65" font="Verdana 12pt"
+        color="white" cursor-visible="false">
+      <set attributeName="border-color" to="darkred" begin="focusin" dur="1s"
+           end="focusout"/>
+      <set attributeName="border-color" to="#ff0f3b65" begin="focusout"
+           dur="1s" end="focusin"/>
+      <animate attributeName="cursor-visible" values="true; false; true"
+           begin="focusin" dur="1s" end="focusout" calcMode="discrete"
+           keyTimes="0; 0.5; 1" repeatCount="indefinite" fill="remove"/>
     </demo01:entry>
   </eot>
   <frame title="User based theme demo">
     <stack orientation="vertical" hexpand="true">
-      <entry>Focus me</entry>
+      <entry theme-id="demoEntry">Focus me</entry>
       <stack orientation="horizontal" hexpand="true">
         <label halign="left">Use custom theme</label>
         <switch id="switch01" active="ON" inactive="OFF" activated="false"/>
