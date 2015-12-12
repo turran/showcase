@@ -17,7 +17,7 @@ STRINGIFY(
   </eot>
   <frame title="User based theme demo">
     <stack orientation="vertical" hexpand="true">
-      <entry theme-id="demoEntry">Focus me</entry>
+      <entry theme-name="currentDocument" theme-id="demoEntry">Focus me</entry>
       <stack orientation="horizontal" hexpand="true">
         <label halign="left">Use custom theme</label>
         <switch id="switch01" active="ON" inactive="OFF" activated="false"/>
