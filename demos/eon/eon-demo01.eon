@@ -13,6 +13,12 @@ STRINGIFY(
       <animate attributeName="cursor-visible" values="true; false; true"
            begin="focusin" dur="1s" end="focusout" calcMode="discrete"
            keyTimes="0; 0.5; 1" repeatCount="indefinite" fill="remove"/>
+      <animate attributeName="length-factor" values="0; 1"
+           begin="focusin" dur="0.2s" end="focusout" calcMode="linear"
+           keyTimes="0; 1"/>
+      <animate attributeName="length-factor" values="1; 0"
+           begin="focusout" dur="0.2s" end="focusin" calcMode="linear"
+           keyTimes="0; 1"/>
     </demo01:entry>
   </eot>
   <frame title="User based theme demo">

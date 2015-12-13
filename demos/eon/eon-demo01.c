@@ -36,6 +36,7 @@ typedef struct _Demo01_Entry
 	/* attributes */
 	Egueb_Dom_Node *border_color;
 	Egueb_Dom_Node *cursor_visible;
+	Egueb_Dom_Node *length_factor;
 	/* private */
 	Enesim_Renderer *cursor;
 	Enesim_Renderer *underline;
@@ -60,6 +61,7 @@ static void _demo01_entry_dtor(void *data)
 	/* attributes */
 	egueb_dom_node_unref(thiz->cursor_visible);
 	egueb_dom_node_unref(thiz->border_color);
+	egueb_dom_node_unref(thiz->length_factor);
 	/* private */
 	enesim_renderer_unref(thiz->cursor);
 	enesim_renderer_unref(thiz->underline);
@@ -87,12 +89,16 @@ static Eina_Bool _demo01_entry_process(void *data)
 	int cursor_visible;
 	int cursor_index;
 	int cursor_start;
+	double length_factor;
+	double length_increment;
+	double mid_point;
 
 	thiz = data;
 	/* get the final attributes */
 	egueb_dom_attr_final_get(thiz->border_color, &argb);
 	border_color = enesim_color_argb_from(argb);
 	egueb_dom_attr_final_get(thiz->cursor_visible, &cursor_visible);
+	egueb_dom_attr_final_get(thiz->length_factor, &length_factor);
 	/* get the inherited members */
 	enabled = eon_theme_widget_enabled_get(thiz->n);
 	eon_theme_renderable_geometry_get(thiz->n, &geom);
@@ -107,8 +113,12 @@ static Eina_Bool _demo01_entry_process(void *data)
 
 	/* set the underline */
 	enesim_renderer_shape_stroke_color_set(thiz->underline, border_color);
-	enesim_renderer_line_coords_set(thiz->underline, geom.x,
-			geom.y + geom.h, geom.x + geom.w, geom.y + geom.h);
+	/* the length factor */
+	mid_point = geom.w / 2;
+	length_increment = mid_point * length_factor;
+	enesim_renderer_line_coords_set(thiz->underline, geom.x + mid_point - length_increment,
+			geom.y + geom.h, geom.x + mid_point + length_increment,
+			geom.y + geom.h);
 
 	/* set the cursor */
 	/* TODO no need to calculate this every time, move this calc to the base
@@ -227,8 +237,13 @@ static Egueb_Dom_Node * demo01_entry_new(void)
 	s = egueb_dom_string_new_with_static_string("cursor-visible");
 	thiz->cursor_visible = egueb_dom_attr_boolean_new(s, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
+	s = egueb_dom_string_new_with_static_string("length-factor");
+	thiz->length_factor = egueb_dom_attr_double_new(s, NULL, EINA_TRUE,
+			EINA_TRUE, EINA_FALSE);
+	egueb_dom_attr_set(thiz->length_factor, EGUEB_DOM_ATTR_TYPE_DEFAULT, 0);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->border_color), NULL);
 	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->cursor_visible), NULL);
+	egueb_dom_element_attribute_node_set(n, egueb_dom_node_ref(thiz->length_factor), NULL);
 	thiz->n = n;
 
 	return n;
