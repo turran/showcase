@@ -4,7 +4,7 @@ STRINGIFY(
   xmlns:demo01="http://www.eon.org/theme/demo01">
   <!-- declare our own theme for the entry -->
   <eot>
-    <demo01:entry id="demoEntry" border-color="#ff0f3b65" font="Verdana 12pt"
+    <demo01:entry id="entry" border-color="#ff0f3b65" font="Verdana 12pt"
         color="white" cursor-visible="false">
       <set attributeName="border-color" to="darkred" begin="focusin" dur="1s"
            end="focusout"/>
@@ -23,7 +23,7 @@ STRINGIFY(
   </eot>
   <frame title="User based theme demo">
     <stack orientation="vertical" hexpand="true">
-      <entry theme-name="currentDocument" theme-id="demoEntry">Focus me</entry>
+      <entry id="entry01" theme-name="currentDocument">Focus me</entry>
       <stack orientation="horizontal" hexpand="true">
         <label halign="left">Use custom theme</label>
         <switch id="switch01" active="ON" inactive="OFF" activated="false"/>

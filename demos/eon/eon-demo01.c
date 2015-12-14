@@ -22,11 +22,47 @@ static void _on_close(Egueb_Dom_Event *ev, void *data)
 	ecore_main_loop_quit();
 }
 
-static void _on_switch01_click(Egueb_Dom_Event *ev, void *data)
+static void _on_switch01_activate_cb(Egueb_Dom_Event *ev, void *data)
 {
-	printf("click!\n");
+	Egueb_Dom_Node *doc;
+	Egueb_Dom_Node *target;
+	Egueb_Dom_Node *entry01;
+	Egueb_Dom_String *s, *attr, *value;
+
+	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
+	doc = egueb_dom_node_owner_document_get(target);
+	s = egueb_dom_string_new_with_static_string("entry01"),
+	entry01 = egueb_dom_document_element_get_by_id(doc, s, NULL);
+	attr = egueb_dom_string_new_with_static_string("theme-name");
+	value = egueb_dom_string_new_with_static_string("currentDocument");
+	egueb_dom_element_attribute_set(entry01, attr, value, NULL);
+	egueb_dom_string_unref(attr);
+	egueb_dom_string_unref(value);
+	egueb_dom_string_unref(s);
+	egueb_dom_node_unref(doc);
+	egueb_dom_node_unref(target);
 }
 
+static void _on_switch01_deactivate_cb(Egueb_Dom_Event *ev, void *data)
+{
+	Egueb_Dom_Node *doc;
+	Egueb_Dom_Node *target;
+	Egueb_Dom_Node *entry01;
+	Egueb_Dom_String *s, *attr, *value;
+
+	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
+	doc = egueb_dom_node_owner_document_get(target);
+	s = egueb_dom_string_new_with_static_string("entry01"),
+	entry01 = egueb_dom_document_element_get_by_id(doc, s, NULL);
+	attr = egueb_dom_string_new_with_static_string("theme-name");
+	value = egueb_dom_string_new_with_static_string("environment");
+	egueb_dom_element_attribute_set(entry01, attr, value, NULL);
+	egueb_dom_string_unref(attr);
+	egueb_dom_string_unref(value);
+	egueb_dom_string_unref(s);
+	egueb_dom_node_unref(doc);
+	egueb_dom_node_unref(target);
+}
 /*----------------------------------------------------------------------------*
  *                              Entry interface                               *
  *----------------------------------------------------------------------------*/
@@ -256,6 +292,7 @@ int main(void)
 	Egueb_Dom_Node *doc = NULL;
 	Egueb_Dom_Node *switch01;
 	Egueb_Dom_Event_Target *evt;
+	Egueb_Dom_String *s;
 	Enesim_Stream *stream;
 
 	if (!efl_egueb_init())
@@ -268,12 +305,14 @@ int main(void)
 
 	stream = enesim_stream_buffer_new(_xml, strlen(_xml), NULL);
 	egueb_dom_parser_parse(stream, &doc);
-	switch01 = egueb_dom_document_element_get_by_id(doc,
-			egueb_dom_string_new_with_static_string("switch01"),
-			NULL);
+	s = egueb_dom_string_new_with_static_string("switch01"),
+	switch01 = egueb_dom_document_element_get_by_id(doc, s, NULL);
+	egueb_dom_string_unref(s);
 	evt = EGUEB_DOM_EVENT_TARGET_CAST(switch01);
-	egueb_dom_event_target_event_listener_add(evt, EGUEB_DOM_EVENT_MOUSE_CLICK,
-			_on_switch01_click, EINA_TRUE, NULL);
+	egueb_dom_event_target_event_listener_add(evt, EON_NAME_EVENT_ACTIVATE,
+			_on_switch01_activate_cb, EINA_TRUE, NULL);
+	egueb_dom_event_target_event_listener_add(evt, EON_NAME_EVENT_DEACTIVATE,
+			_on_switch01_deactivate_cb, EINA_TRUE, NULL);
 	egueb_dom_node_unref(switch01);
 	
 	/* create our doc with the xml egueb-demo01.eon */
