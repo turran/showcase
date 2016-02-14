@@ -23,11 +23,11 @@ static Egueb_Dom_Node * _create_in_anim(void)
 	/* default clock of 0.5s */
 	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
 	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
-	value = egueb_dom_string_new_with_static_string("opacity");
+	value = egueb_dom_string_new_with_static_chars("opacity");
 	egueb_smil_animation_attribute_name_set(anim, value);
-	value = egueb_dom_string_new_with_static_string("0");
+	value = egueb_dom_string_new_with_static_chars("0");
 	egueb_smil_animate_base_from_set(anim, value); 
-	value = egueb_dom_string_new_with_static_string("1");
+	value = egueb_dom_string_new_with_static_chars("1");
 	egueb_smil_animate_base_to_set(anim, value); 
 	egueb_smil_animation_dur_set(anim, &dur);
 
@@ -44,11 +44,11 @@ static Egueb_Dom_Node * _create_out_anim(void)
 	/* default clock of 0.5s */
 	dur.type = EGUEB_SMIL_DURATION_TYPE_CLOCK;
 	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 0.5;
-	value = egueb_dom_string_new_with_static_string("opacity");
+	value = egueb_dom_string_new_with_static_chars("opacity");
 	egueb_smil_animation_attribute_name_set(anim, value);
-	value = egueb_dom_string_new_with_static_string("1");
+	value = egueb_dom_string_new_with_static_chars("1");
 	egueb_smil_animate_base_from_set(anim, value); 
-	value = egueb_dom_string_new_with_static_string("0");
+	value = egueb_dom_string_new_with_static_chars("0");
 	egueb_smil_animate_base_to_set(anim, value); 
 	egueb_smil_animation_dur_set(anim, &dur);
 
@@ -115,7 +115,7 @@ static void _on_hex_mouse_in(Egueb_Dom_Event *ev, void *data)
 		Egueb_Dom_Node *anim;
 
 		id = egueb_svg_element_id_get(hex);
-		//printf("mouse in %s\n", egueb_dom_string_string_get(id));
+		//printf("mouse in %s\n", egueb_dom_string_chars_get(id));
 		egueb_dom_string_unref(id);
 		anim = _create_in_anim();
 		egueb_dom_node_child_append(hex, anim, NULL);
@@ -140,7 +140,7 @@ static void _on_hex_mouse_out(Egueb_Dom_Event *ev, void *data)
 		//egueb_dom_node_unref(anim);
 		/* add the out color animation */
 		id = egueb_svg_element_id_get(hex);
-		//printf("mouse out %s\n", egueb_dom_string_string_get(id));
+		//printf("mouse out %s\n", egueb_dom_string_chars_get(id));
 		egueb_dom_string_unref(id);
 		anim = _create_out_anim();
 		egueb_dom_node_child_append(hex, anim, NULL);
@@ -160,8 +160,8 @@ static Egueb_Dom_Node * _create_hexagon(void)
 		Egueb_Dom_String *val;
 		Egueb_Dom_String *attr;
 
-		val = egueb_dom_string_new_with_static_string("M14 33L0 25L0 8L14 0L28 8L28 25L14 33");
-		attr = egueb_dom_string_new_with_static_string("d");
+		val = egueb_dom_string_new_with_static_chars("M14 33L0 25L0 8L14 0L28 8L28 25L14 33");
+		attr = egueb_dom_string_new_with_static_chars("d");
 		egueb_dom_element_attribute_set(hex, attr, val, NULL);
 		egueb_dom_string_unref(attr);
 		egueb_dom_string_unref(val);
@@ -216,7 +216,7 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 		Egueb_Dom_String *id;
 		char *ids;
 		asprintf(&ids, "hex-%dx%d", hx, hy);
-		id = egueb_dom_string_new_with_string(ids);
+		id = egueb_dom_string_new_with_chars(ids);
 		egueb_svg_element_id_set(hex, id);
 	}
 	enesim_matrix_translate(&m, hx, hy);
@@ -253,7 +253,7 @@ int main(void)
 	egueb_svg_element_svg_height_set_simple(svg, &height);
 	/* create the background pattern */
 	patt = egueb_svg_element_pattern_new();
-	egueb_svg_element_id_set(patt, egueb_dom_string_new_with_static_string("pattern0"));
+	egueb_svg_element_id_set(patt, egueb_dom_string_new_with_static_chars("pattern0"));
 	egueb_svg_length_set(&width, 28, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_length_set(&height, 50, EGUEB_SVG_LENGTH_UNIT_PX);
 	egueb_svg_element_pattern_width_set(patt, &width);
@@ -265,8 +265,8 @@ int main(void)
 		Egueb_Dom_String *val;
 		Egueb_Dom_String *attr;
 
-		val = egueb_dom_string_new_with_static_string("M14 33L0 25L0 8L14 0L28 8L28 25L14 33L14 50");
-		attr = egueb_dom_string_new_with_static_string("d");
+		val = egueb_dom_string_new_with_static_chars("M14 33L0 25L0 8L14 0L28 8L28 25L14 33L14 50");
+		attr = egueb_dom_string_new_with_static_chars("d");
 		egueb_dom_element_attribute_set(path, attr, val, NULL);
 	}
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
@@ -282,7 +282,7 @@ int main(void)
 	/* create the background */
 	rect = egueb_svg_element_rect_new();
 	paint.type = EGUEB_SVG_PAINT_TYPE_SERVER;
-	paint.uri = egueb_dom_string_new_with_static_string("url(#pattern0)");
+	paint.uri = egueb_dom_string_new_with_static_chars("url(#pattern0)");
 	egueb_svg_element_fill_set(rect, &paint);
 	egueb_svg_length_set(&width, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);
 	egueb_svg_length_set(&height, 100, EGUEB_SVG_LENGTH_UNIT_PERCENT);

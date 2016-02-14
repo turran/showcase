@@ -119,21 +119,21 @@ static void _on_rect_mouse_move(Egueb_Dom_Event *ev, void *data)
 	dur.data.clock = EGUEB_SMIL_CLOCK_SECONDS * 1;
 	/* add an animation for the opacity */
 	anim = egueb_smil_animate_new();
-	value = egueb_dom_string_new_with_static_string("opacity");
+	value = egueb_dom_string_new_with_static_chars("opacity");
 	egueb_smil_animation_attribute_name_set(anim, value);
-	value = egueb_dom_string_new_with_static_string("1");
+	value = egueb_dom_string_new_with_static_chars("1");
 	egueb_smil_animate_base_from_set(anim, value); 
-	value = egueb_dom_string_new_with_static_string("0");
+	value = egueb_dom_string_new_with_static_chars("0");
 	egueb_smil_animate_base_to_set(anim, value); 
 	egueb_smil_animation_dur_set(anim, &dur);
 	egueb_dom_node_child_append(circle, anim, NULL);
 	/* add an animation for the radius */
 	anim = egueb_smil_animate_new();
-	value = egueb_dom_string_new_with_static_string("r");
+	value = egueb_dom_string_new_with_static_chars("r");
 	egueb_smil_animation_attribute_name_set(anim, value);
-	value = egueb_dom_string_new_with_static_string("0.1");
+	value = egueb_dom_string_new_with_static_chars("0.1");
 	egueb_smil_animate_base_from_set(anim, value); 
-	value = egueb_dom_string_new_with_static_string("100");
+	value = egueb_dom_string_new_with_static_chars("100");
 	egueb_smil_animate_base_to_set(anim, value); 
 	egueb_smil_animation_dur_set(anim, &dur);
 	egueb_dom_node_child_append(circle, anim, NULL);

@@ -121,8 +121,8 @@ static void _create_leaf(Point *p, Point *scale, int height, Egueb_Dom_Node *gro
 		Egueb_Dom_String *val;
 		Egueb_Dom_String *attr;
 
-		val = egueb_dom_string_new_with_static_string("M0,0 Q5,-5 10,0 5,5 0,0z");
-		attr = egueb_dom_string_new_with_static_string("d");
+		val = egueb_dom_string_new_with_static_chars("M0,0 Q5,-5 10,0 5,5 0,0z");
+		attr = egueb_dom_string_new_with_static_chars("d");
 		egueb_dom_element_attribute_set(leaf, attr, val, NULL);
 		egueb_dom_string_unref(attr);
 		egueb_dom_string_unref(val);
@@ -200,8 +200,8 @@ static void _create_plant(void)
 		Egueb_Dom_String *val;
 		Egueb_Dom_String *attr;
 
-		val = egueb_dom_string_new_with_string(d_str);
-		attr = egueb_dom_string_new_with_static_string("d");
+		val = egueb_dom_string_new_with_chars(d_str);
+		attr = egueb_dom_string_new_with_static_chars("d");
 		egueb_dom_element_attribute_set(stem, attr, val, NULL);
 		egueb_dom_string_unref(attr);
 		egueb_dom_string_unref(val);
@@ -260,11 +260,11 @@ int main(void)
 	paint.type = EGUEB_SVG_PAINT_TYPE_COLOR;
 	egueb_svg_color_components_from(&paint.color, 0x00, 0xff, 0x00);
 	egueb_svg_element_stroke_set(g, &paint);
-	egueb_svg_element_id_set(g, egueb_dom_string_new_with_static_string("stems"));
+	egueb_svg_element_id_set(g, egueb_dom_string_new_with_static_chars("stems"));
 	egueb_dom_node_child_append(svg, g, NULL);
 	/* add the group of leaves */ 
 	g = leaves = egueb_svg_element_g_new();
-	egueb_svg_element_id_set(g, egueb_dom_string_new_with_static_string("leaves"));
+	egueb_svg_element_id_set(g, egueb_dom_string_new_with_static_chars("leaves"));
 	egueb_dom_node_child_append(svg, g, NULL);
 
 	egueb_dom_node_child_append(doc, svg, NULL);

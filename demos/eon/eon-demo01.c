@@ -31,10 +31,10 @@ static void _on_switch01_activate_cb(Egueb_Dom_Event *ev, void *data)
 
 	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	doc = egueb_dom_node_owner_document_get(target);
-	s = egueb_dom_string_new_with_static_string("entry01"),
+	s = egueb_dom_string_new_with_static_chars("entry01"),
 	entry01 = egueb_dom_document_element_get_by_id(doc, s, NULL);
-	attr = egueb_dom_string_new_with_static_string("theme-name");
-	value = egueb_dom_string_new_with_static_string("currentDocument");
+	attr = egueb_dom_string_new_with_static_chars("theme-name");
+	value = egueb_dom_string_new_with_static_chars("currentDocument");
 	egueb_dom_element_attribute_set(entry01, attr, value, NULL);
 	egueb_dom_string_unref(attr);
 	egueb_dom_string_unref(value);
@@ -52,10 +52,10 @@ static void _on_switch01_deactivate_cb(Egueb_Dom_Event *ev, void *data)
 
 	target = EGUEB_DOM_NODE(egueb_dom_event_target_get(ev));
 	doc = egueb_dom_node_owner_document_get(target);
-	s = egueb_dom_string_new_with_static_string("entry01"),
+	s = egueb_dom_string_new_with_static_chars("entry01"),
 	entry01 = egueb_dom_document_element_get_by_id(doc, s, NULL);
-	attr = egueb_dom_string_new_with_static_string("theme-name");
-	value = egueb_dom_string_new_with_static_string("environment");
+	attr = egueb_dom_string_new_with_static_chars("theme-name");
+	value = egueb_dom_string_new_with_static_chars("environment");
 	egueb_dom_element_attribute_set(entry01, attr, value, NULL);
 	egueb_dom_string_unref(attr);
 	egueb_dom_string_unref(value);
@@ -267,13 +267,13 @@ static Egueb_Dom_Node * demo01_entry_new(void)
 
 	n = eon_theme_element_entry_new(&_descriptor, thiz);
 	/* the attributes */
-	s = egueb_dom_string_new_with_static_string("border-color");
+	s = egueb_dom_string_new_with_static_chars("border-color");
 	thiz->border_color = egueb_css_attr_color_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
-	s = egueb_dom_string_new_with_static_string("cursor-visible");
+	s = egueb_dom_string_new_with_static_chars("cursor-visible");
 	thiz->cursor_visible = egueb_dom_attr_boolean_new(s, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
-	s = egueb_dom_string_new_with_static_string("length-factor");
+	s = egueb_dom_string_new_with_static_chars("length-factor");
 	thiz->length_factor = egueb_dom_attr_double_new(s, NULL, EINA_TRUE,
 			EINA_TRUE, EINA_FALSE);
 	egueb_dom_attr_set(thiz->length_factor, EGUEB_DOM_ATTR_TYPE_DEFAULT, 0);
@@ -305,7 +305,7 @@ int main(void)
 
 	stream = enesim_stream_buffer_new(_xml, strlen(_xml), NULL);
 	egueb_dom_parser_parse(stream, &doc);
-	s = egueb_dom_string_new_with_static_string("switch01"),
+	s = egueb_dom_string_new_with_static_chars("switch01"),
 	switch01 = egueb_dom_document_element_get_by_id(doc, s, NULL);
 	egueb_dom_string_unref(s);
 	evt = EGUEB_DOM_EVENT_TARGET_CAST(switch01);
